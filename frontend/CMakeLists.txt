@@ -5,121 +5,107 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 1. Явно задаем папку, которую подтвердил ваш 'ls'
-set(VCPKG_LIB_DIR "D:/vcpkg_source/vcpkg/installed/x64-mingw-dynamic/lib")
+# --- 1. Кроссплатформенная настройка путей ---
 
-# 2. Указываем полные пути к найденным файлам
-set(LIB_ONNX "${VCPKG_LIB_DIR}/libonnx.a")
-set(LIB_ONNX_PROTO "${VCPKG_LIB_DIR}/libonnx_proto.a")
+# Пытаемся взять VCPKG_ROOT из системы.
+# Если не задано, CMake просто оставит переменную пустой (но лучше задать её в ОС)
+if(NOT DEFINED ENV{VCPKG_ROOT})
+    message(WARNING "VCPKG_ROOT environment variable is not set! This might cause build issues.")
+endif()
 
-# 3. Находим пакеты для инклудов (заголовков)
+set(VCPKG_ROOT_DIR $ENV{VCPKG_ROOT})
+
+# Если триплет не задан (на Linux он обычно не нужен в командной строке),
+# определяем его по умолчанию для поиска путей.
+if(NOT VCPKG_TARGET_TRIPLET)
+    if(WIN32)
+        set(VCPKG_TARGET_TRIPLET "x64-mingw-dynamic")
+    else()
+        set(VCPKG_TARGET_TRIPLET "x64-linux")
+    endif()
+endif()
+
+# Пути к инклудам и либам теперь универсальны
+set(VCPKG_INSTALLED_DIR "${VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}")
+
+# --- 2. Находим пакеты ---
+# На Linux пакеты из vcpkg подхватываются идеально через find_package
 find_package(ONNX CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
-find_package(Gtest CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
-# 1. Create a library for your core compiler logic
+# --- 3. Создание библиотеки ядра ---
 add_library(compiler_core STATIC
     "src/tree/tree.cpp"
     "src/parse_onnx/parser.cpp"
     "src/dump/dump.cpp"
 )
 
-# 2. Use 'PUBLIC' so anyone linking to this library automatically gets these includes
 target_include_directories(compiler_core PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/tree"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/dump"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/parse_onnx"
-    "D:/vcpkg_source/vcpkg/installed/x64-mingw-dynamic/include"
+    # Больше никакого диска D! Используем переменную:
+    "${VCPKG_INSTALLED_DIR}/include"
 )
 
-# 3. Link external libs TO the core library (PUBLIC so tests get them too)
+# Используем цели (targets) вместо прямых путей к .a файлам.
+# Это гораздо надежнее для кроссплатформенности.
+# ... (начало файла без изменений)
+
+# 1. Явно просим CMake найти файлы библиотек в папке vcpkg
+find_library(LIB_ONNX NAMES onnx PATHS "${VCPKG_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
+find_library(LIB_ONNX_PROTO NAMES onnx_proto PATHS "${VCPKG_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
+
+# 2. Проверка (для отладки)
+if(NOT LIB_ONNX OR NOT LIB_ONNX_PROTO)
+    message(FATAL_ERROR "Could not find ONNX libraries in ${VCPKG_INSTALLED_DIR}/lib")
+endif()
+
+# ... (создание library compiler_core)
+
 target_link_libraries(compiler_core PUBLIC
     "${LIB_ONNX}"
     "${LIB_ONNX_PROTO}"
     protobuf::libprotobuf
 )
 
-# 4. Now your main executable is MUCH simpler:
+# --- 4. Исполняемые файлы ---
 add_executable(${PROJECT_NAME} "src/main.cpp")
 target_link_libraries(${PROJECT_NAME} PRIVATE compiler_core)
 
-# Юнит тесты
-add_executable(unit_tests
-    tests/unit/test_node.cpp
-    tests/unit/test_tree.cpp
-)
-target_link_libraries(unit_tests PRIVATE
-    compiler_core
-    GTest::gtest
-    GTest::gtest_main
-    # "${LIB_ONNX}"
-    # "${LIB_ONNX_PROTO}"
-    # protobuf::libprotobuf
-)
+# Тесты
+add_executable(unit_tests tests/unit/test_node.cpp tests/unit/test_tree.cpp)
+target_link_libraries(unit_tests PRIVATE compiler_core GTest::gtest GTest::gtest_main)
 
-# end-to-end тесты
-add_executable(e2e_tests
-    tests/e2e/test_onnx_parsing.cpp
-)
-target_link_libraries(e2e_tests PRIVATE
-    compiler_core
-    GTest::gtest
-    GTest::gtest_main
-    # "${LIB_ONNX}"
-    # "${LIB_ONNX_PROTO}"
-    # protobuf::libprotobuf
-)
+add_executable(e2e_tests tests/e2e/test_onnx_parsing.cpp)
+target_link_libraries(e2e_tests PRIVATE compiler_core GTest::gtest GTest::gtest_main)
 
 file(COPY tests/e2e/test_models DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 enable_testing()
 add_test(NAME Unit COMMAND unit_tests)
-add_test(NAME E2E  COMMAND  e2e_tests)
+add_test(NAME E2E  COMMAND e2e_tests)
 
-# Для динамической сборки в MinGW
+# --- 5. Специфичные настройки для Windows (DLL) ---
 if(WIN32)
-    # Позволяет линкеру быть более гибким с зависимостями DLL
+    # Линковка для MinGW
     target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--enable-auto-import")
-endif()
 
-
-# для добавления динамич библиотеки
-if(WIN32)
-    # Определяем базовую папку vcpkg
-    set(VCPKG_INSTALLED_DIR "D:/vcpkg_source/vcpkg/installed/x64-mingw-dynamic")
-
-    # Используем $<CONFIG> для автоматического выбора папки bin или debug/bin
-    # Но так как MinGW иногда капризничает, укажем пути явно через условие
-    set(CURRENT_VCPKG_BIN "${VCPKG_INSTALLED_DIR}/debug/bin")
-
-    # Мы знаем точно из ваших прошлых сообщений, что есть файл libprotobufd.dll
-    # Проверьте в проводнике: если в debug/bin лежит onnx.dll без 'd', оставляем так.
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CURRENT_VCPKG_BIN}/libprotobufd.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        COMMENT "Copying files from ${CURRENT_VCPKG_BIN}"
-    )
-endif()
-
-
-find_program(GRAPHVIZ_DOT_EXECUTABLE dot)
-
-if(GRAPHVIZ_DOT_EXECUTABLE)
-    message(STATUS "Graphviz dot found: ${GRAPHVIZ_DOT_EXECUTABLE}")
-
-    set(DOT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dump/model3.dot")
-    set(PNG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dump/model3.png")
-
-    add_custom_command(
-        OUTPUT ${PNG_FILE}
-        COMMAND ${GRAPHVIZ_DOT_EXECUTABLE} -Tpng ${DOT_FILE} -o ${PNG_FILE}
-        DEPENDS ${DOT_FILE}  # Команда сработает, только если .dot файл изменился
-        COMMENT "Converting ONNX graph to PNG image..."
+    # Копирование DLL (на Linux это не нужно, там всё работает через RPATH или LD_LIBRARY_PATH)
+    # Пытаемся найти, где лежит нужная DLL
+    find_file(PROTOBUF_DLL
+        NAMES "libprotobufd.dll" "libprotobuf.dll"
+        PATHS "${VCPKG_INSTALLED_DIR}/debug/bin" "${VCPKG_INSTALLED_DIR}/bin"
+        NO_DEFAULT_PATH
     )
 
-    add_custom_target(graph DEPENDS ${PNG_FILE})
-
-else()
-    message(WARNING "Graphviz 'dot' executable not found. Target 'graph' will not be available.")
+    if(PROTOBUF_DLL)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${PROTOBUF_DLL}"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+            COMMENT "Copying Protobuf DLL for Windows"
+        )
+    endif()
 endif()

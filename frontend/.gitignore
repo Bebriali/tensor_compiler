@@ -1,0 +1,9 @@
+# Ignore CMake build directory
+build/
+
+# Ignore generated visualization files
+dump/*.dot
+dump/*.png
+
+# Ignore binary models if they are large or generated
+models/onnx/*.onnx

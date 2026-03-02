@@ -1,32 +1,52 @@
 #include <iostream>
+#include <filesystem>
+
 #include <google/protobuf/stubs/common.h>
 #include <onnx/onnx_pb.h>
-// #include <fstream>
 
 #include "tree/tree.hpp"
 #include "parse_onnx/parser.hpp"
 #include "dump/dump.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <model_name.onnx>" << std::endl;
+        return 1;
+    }
+
+    const std::string base_path = "models/onnx/";   // хардкод пути
+    std::string file_name = argv[1];
+
+    std::string full_path = base_path + file_name;
+
+    if (!std::filesystem::exists(full_path))
+    {
+        std::cerr << "Model not found: " << full_path << std::endl;
+        return 1;
+    }
+
+    std::cout << "Loading model: " << full_path << std::endl;
     std::cout << "Protobuf version: " << GOOGLE_PROTOBUF_VERSION << std::endl;
 
-    onnx::ModelProto model;
-    std::cout << "ONNX object created successfully!" << std::endl;
-
     OnnxParser parser;
-    auto tree = parser.Parse("models/onnx/model3.onnx");
+    auto tree = parser.Parse(full_path);
 
+    if (!tree)
+    {
+        std::cerr << "Failed to parse model." << std::endl;
+        return 1;
+    }
+
+    // автоматически формируем имя .dot
+    std::filesystem::path p(file_name);
+    std::string output_dot = "dump/" + p.stem().string() + ".dot";
 
     OnnxDumper dumper;
-    // std::ofstream dump_file;
-    // dump_file.open("../models/dump.dot");
+    dumper.DumpGraphViz(*tree, output_dot);
 
-    // dumper.DumpConsole(*tree);
-    dumper.DumpGraphViz(*tree, "dump/model3.dot");
-
-    // if (dump_file.is_open())
-    //     dump_file.close();
+    std::cout << "Graph saved to: " << output_dot << std::endl;
 
     return 0;
 }
