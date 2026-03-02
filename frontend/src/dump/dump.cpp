@@ -71,14 +71,10 @@ void OnnxDumper::DumpGraphViz(const Tree_t& tree, const std::string& output_path
     {
         std::set<Node_t*> visited;
 
-        // 1. Помечаем корень как посещенный, чтобы пропустить его отрисовку
         visited.insert(tree.root.get());
 
-        // 2. Просто запускаем рекурсию для детей
         for (const auto& child : tree.root->children) {
             if (child) {
-                // ВАЖНО: Не вставляем child в visited здесь!
-                // Это сделает сама DumpNodeDot при входе.
                 DumpNodeDot(child, out, visited);
             }
         }

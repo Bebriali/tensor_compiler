@@ -6,7 +6,7 @@
 TEST(OnnxE2E, ParseSimpleLinearModel) {
     OnnxParser parser;
 
-    auto tree = parser.Parse("models/model2.onnx");
+    auto tree = parser.Parse("../../models/model2.onnx");
 
     ASSERT_NE(tree, nullptr);
     EXPECT_EQ(tree->name, "SingleLinearLayer");

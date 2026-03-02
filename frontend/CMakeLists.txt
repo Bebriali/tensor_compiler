@@ -78,7 +78,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE compiler_core)
 add_executable(unit_tests tests/unit/test_node.cpp tests/unit/test_tree.cpp)
 target_link_libraries(unit_tests PRIVATE compiler_core GTest::gtest GTest::gtest_main)
 
-add_executable(e2e_tests tests/e2e/test_onnx_parsing.cpp)
+add_executable(e2e_tests
+    tests/e2e/test_onnx_parsing.cpp
+    tests/e2e/test_generate_and_parse.cpp
+)
 target_link_libraries(e2e_tests PRIVATE compiler_core GTest::gtest GTest::gtest_main)
 
 file(COPY tests/e2e/test_models DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

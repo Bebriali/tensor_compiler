@@ -21,15 +21,15 @@ std::unique_ptr<Tree_t> OnnxParser::Parse(const std::string& file_path)
 
     const auto& graph = model.graph();
 
-    // 1. Мапа: Имя_Тензора -> Узел_Который_Его_Создал
-    // Это поможет нам понять, кто для кого является родителем.
+    // tensor name -> producer
+    // making clear who is parent
     std::unordered_map<std::string, std::shared_ptr<Node_t>> output_to_producer;
 
-    // Список всех созданных узлов для второго прохода
+    // list of nodes
     std::vector<std::shared_ptr<Node_t>> all_nodes;
     all_nodes.reserve(graph.node_size());
 
-    // --- Первый проход: Создаем объекты узлов ---
+    // --- first iter: making nodes ---
     for (int i = 0; i < graph.node_size(); ++i)
     {
         const auto& n = graph.node(i);
@@ -37,7 +37,6 @@ std::unique_ptr<Tree_t> OnnxParser::Parse(const std::string& file_path)
 
         auto node = std::make_shared<Node_t>(name, n.op_type());
 
-        // --- НОВОЕ: Парсим атрибуты ноды ---
         for (const auto& attr : n.attribute())
         {
             const std::string& attr_name = attr.name();
@@ -67,27 +66,23 @@ std::unique_ptr<Tree_t> OnnxParser::Parse(const std::string& file_path)
                 node->setAttr(attr_name, vals);
             }
         }
-        // ------------------------------------
 
         all_nodes.push_back(node);
 
-        // Регистрируем выходные тензоры
         for (const auto& out_name : n.output())
         {
                 output_to_producer[out_name] = node;
         }
     }
 
-    // --- Второй проход: Сшиваем связи ---
+    // --- second iter: making connections ---
     for (int i = 0; i < graph.node_size(); ++i)
     {
         const auto& n = graph.node(i);
         auto current_node = all_nodes[i];
 
-        // Смотрим на входы узла
         for (const auto& in_name : n.input())
         {
-            // Если этот вход был создан другим узлом из нашего списка
             if (output_to_producer.find(in_name) != output_to_producer.end())
             {
                 auto parent = output_to_producer[in_name];
@@ -97,9 +92,9 @@ std::unique_ptr<Tree_t> OnnxParser::Parse(const std::string& file_path)
         }
     }
 
-    // --- Поиск корней ---
-    // В ONNX может быть несколько входов, но мы создадим виртуальный корень "Model",
-    // к которому привяжем все узлы, у которых нет родителей (начало графа).
+    // --- finding roots ---
+    // making virtual root - for all non-parents roots,
+    // it would be the graph beginning.
     auto virtual_root = std::make_shared<Node_t>("model_root", "Graph");
     for (auto& node : all_nodes)
     {

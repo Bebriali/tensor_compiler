@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include <onnx/onnx_pb.h> // Заголовок ONNX
+#include <onnx/onnx_pb.h>
 #include "tree.hpp"
 
 class OnnxParser
