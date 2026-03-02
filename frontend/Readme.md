@@ -47,7 +47,7 @@ cmake --build build
 Запуск парсера для конкретной ONNX модели:
 
 ```powershell
-./build/TensorCompiler.exe <путь_к_модели.onnx>
+./build/TensorCompiler.exe <*.onnx>
 ```
 
 ### Тестирование
