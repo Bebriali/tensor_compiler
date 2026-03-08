@@ -73,7 +73,9 @@ x * y → 2
 <summary>
     genericIR
 </summary>
+    
 ![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
+
 </details>
 ---
 
@@ -170,12 +172,6 @@ bb_body: ; Тело (развернуто на 2 итерации)
 bb_exit: ; Выход
     return res1
 ```
-
-<br>
-
-![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
-
-<br>
 ---
 </details>
 <details>
