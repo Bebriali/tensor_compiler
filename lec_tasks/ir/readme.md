@@ -170,13 +170,23 @@ bb_body: ; Тело (развернуто на 2 итерации)
 bb_exit: ; Выход
     return res1
 ```
+
+<br>
+
+![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
+
+<br>
 ---
 </details>
 <details>
 <summary>
     genericIR
 </summary>
+<br>
+    
 ![generic ir после применения арифметических оптимизаций](generic/unroll.png)
+
+</br>
 </details>
 
 # 4. Анализ сложности
