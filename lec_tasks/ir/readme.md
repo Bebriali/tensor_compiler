@@ -73,7 +73,7 @@ x * y → 2
 <summary>
     genericIR
 </summary>
-![generic ir после применения арифметических оптимизаций]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/const_fold.png](generic/const_fold.png))
+![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
 </details>
 ---
 
@@ -134,8 +134,8 @@ bb_remainder: ; Обработка последнего элемента, есл
     }
     br bb_exit
 ```
-</details>
 ---
+</details>
 
 # 3. Финальное оптимизированное SSA IR
 
@@ -176,7 +176,7 @@ bb_exit: ; Выход
 <summary>
     genericIR
 </summary>
-![generic ir после применения развертки цикла]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/unroll.png](generic/unroll.png))
+![generic ir после применения арифметических оптимизаций](generic/unroll.png)
 </details>
 
 # 4. Анализ сложности
