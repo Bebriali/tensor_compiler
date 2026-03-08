@@ -69,13 +69,13 @@ x * y → 2
 |---|---|
 | `i % 2 == 0` | `i & 1 == 0` |
 | `val * 2` | `val << 1` |
----
 <details>
 <summary>
     genericIR
 </summary>
-![generic ir после применения арифметических оптимизаций]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/const_fold.png](https://raw.githubusercontent.com/bebriali/tensor_compiler/main/lec_tasks/ir/generic/const_fold.png))
+![generic ir после применения арифметических оптимизаций]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/const_fold.png](generic/const_fold.png))
 </details>
+---
 
 ## 3. Loop Unrolling (Развертка цикла)
 
@@ -176,7 +176,7 @@ bb_exit: ; Выход
 <summary>
     genericIR
 </summary>
-![generic ir после применения развертки цикла]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/unroll.png](https://raw.githubusercontent.com/bebriali/tensor_compiler/main/lec_tasks/ir/generic/unroll.png))
+![generic ir после применения развертки цикла]([github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/unroll.png](generic/unroll.png))
 </details>
 
 # 4. Анализ сложности
