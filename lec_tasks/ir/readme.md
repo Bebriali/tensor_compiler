@@ -77,6 +77,7 @@ x * y → 2
 ![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
 
 </details>
+
 ---
 
 ## 3. Loop Unrolling (Развертка цикла)
