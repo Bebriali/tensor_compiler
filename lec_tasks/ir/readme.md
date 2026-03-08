@@ -37,7 +37,7 @@ int functional(int *a, int n) {
 ---
 <details>
 <summary>
-    промежуточный код
+    generic код
 </summary>
 
     
