@@ -1,0 +1,22 @@
+digraph Dom {
+    node [shape = "ellipse", fontname = "Courier New", fontsize = 14];
+    edge [fontname = "Arial", fontsize = 12];
+    rankdir = TB;
+
+    // Определение блоков с SSA именами
+    bb0 [label="bb0: Entry\nres0=0, i0=0", fillcolor="#e1f5fe"];
+    bb1 [label="bb1: Loop Header\nphi-nodes, i1<n", fillcolor="#fff9c4"];
+    bb2 [label="bb2: Split\ni1 % 2 == 0", fillcolor="#fff9c4"];
+    bb3 [label="bb3: Then\nres3 = ...", fillcolor="#c8e6c9"];
+    bb4 [label="bb4: Else\nres4 = ...", fillcolor="#ffcdd2"];
+    bb_inc [label="bb_inc: Inc\nres_inc=phi, i_inc=i1+1", fillcolor="#e1f5fe"];
+    bb5 [label="bb5: Exit\nreturn res1", fillcolor="#cfd8dc"];
+
+    // Правильные связи доминирования (IDom)
+    bb0 -> bb1;     // Вход доминирует над заголовком цикла
+    bb1 -> bb2;     // Заголовок цикла доминирует над телом
+    bb1 -> bb5;     // Заголовок цикла доминирует над выходом (т.к. проверка i<n обязательна)
+    bb2 -> bb3;     // Развилка доминирует над веткой then
+    bb2 -> bb4;     // Развилка доминирует над веткой else
+    bb2 -> bb_inc;  // Развилка доминирует над инкрементом
+}

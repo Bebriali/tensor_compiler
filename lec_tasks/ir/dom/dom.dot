@@ -1,0 +1,23 @@
+digraph Dom {
+    node [shape = "ellipse", fontname = "Courier New", fontsize = 14];
+    edge [fontname = "Arial", fontsize = 12];
+    rankdir = TB;
+
+// Определение блоков с актуальными SSA именами
+    bb0 [label="bb0: Entry\nres0 = 0, i0 = 0", fillcolor="#e1f5fe"];
+    bb1 [label="bb1: Loop Header\ni1 = phi(i0, i_inc)\nres1 = phi(res0, res_inc)\ncmp1 = i1 < n", fillcolor="#fff9c4"];
+    bb2 [label="bb2: If-Else Split\nx2 = 2, y2 = 1\ncmp2 = i1 % 2 == 0", fillcolor="#fff9c4"];
+    bb3 [label="bb3: Then (Even)\nres3 = res1 + term3", fillcolor="#c8e6c9"];
+    bb4 [label="bb4: Else (Odd)\nres4 = res1 - term4", fillcolor="#ffcdd2"];
+    bb_inc [label="bb_inc: Increment\nres_inc = phi(res3, res4)\ni_inc = i1 + 1", fillcolor="#e1f5fe"];
+    bb5 [label="bb5: Exit\nreturn res1", fillcolor="#cfd8dc"];
+
+    // Иерархия доминирования
+    bb0 -> bb1;     // bb0 — единственный путь к циклу
+    bb1 -> bb2;     // Чтобы попасть в тело, нужно пройти проверку bb1
+    bb1 -> bb5;     // Чтобы выйти, тоже нужно пройти проверку bb1
+
+    bb2 -> bb3;     // bb2 доминирует над веткой then
+    bb2 -> bb4;     // bb2 доминирует над веткой else
+    bb2 -> bb_inc;  // bb2 доминирует над инкрементом (вход в него через развилку)
+}

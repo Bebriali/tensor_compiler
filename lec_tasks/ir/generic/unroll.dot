@@ -1,0 +1,57 @@
+digraph CFG_Unrolled_Full {
+    node [shape=none, fontname="Courier New", fontsize=10];
+    edge [fontname="Arial", fontsize=9];
+    rankdir=TB;
+
+    bb0 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#e1f5fe">
+            <tr><td bgcolor="#b3e5fc"><b>bb0: Entry</b></td></tr>
+            <tr><td align="left">res0 = 0</td></tr>
+            <tr><td align="left">i0 = 0</td></tr>
+            <tr><td align="left">limit = n - 1</td></tr>
+            <tr><td align="left">br bb1</td></tr>
+        </table>>];
+
+    bb1 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#fff9c4">
+            <tr><td bgcolor="#fff176"><b>bb1: Loop Header</b></td></tr>
+            <tr><td align="left">i1 = phi(i0, i_inc)</td></tr>
+            <tr><td align="left">res1 = phi(res0, res_inc)</td></tr>
+            <tr><td align="left">cmp = i1 &lt; limit</td></tr>
+            <tr><td align="left">br cmp, bb_body, bb_remainder</td></tr>
+        </table>>];
+
+    bb_body [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#c8e6c9">
+            <tr><td bgcolor="#a5d6a7"><b>bb_body: Unrolled (2x)</b></td></tr>
+            <tr><td align="left"><i>// Even Index i1</i></td></tr>
+            <tr><td align="left">addr_e = getelementptr a, i1</td></tr>
+            <tr><td align="left">val_e = load [addr_e]</td></tr>
+            <tr><td align="left">res_e = res1 + (val_e &lt;&lt; 1)</td></tr>
+            <tr><td align="left"><i>// Odd Index i1 + 1</i></td></tr>
+            <tr><td align="left">i_next = i1 + 1</td></tr>
+            <tr><td align="left">addr_o = getelementptr a, i_next</td></tr>
+            <tr><td align="left">val_o = load [addr_o]</td></tr>
+            <tr><td align="left">res_o = res_e - (val_o + 2)</td></tr>
+            <tr><td align="left">res_inc = res_o</td></tr>
+            <tr><td align="left">i_inc = i1 + 2</td></tr>
+            <tr><td align="left">br bb1</td></tr>
+        </table>>];
+
+    bb_remainder [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#fff9c4">
+            <tr><td bgcolor="#fff176"><b>bb_remainder</b></td></tr>
+            <tr><td align="left">last_cmp = i1 &lt; n</td></tr>
+            <tr><td align="left">if (last_cmp) handle_tail()</td></tr>
+            <tr><td align="left">br bb5</td></tr>
+        </table>>];
+
+    bb5 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#cfd8dc">
+            <tr><td bgcolor="#b0bec5"><b>bb5: Exit</b></td></tr>
+            <tr><td align="left">res_out = phi(res1, res_final)</td></tr>
+            <tr><td align="left">return res_out</td></tr>
+        </table>>];
+
+    bb0 -> bb1; bb1 -> bb_body; bb1 -> bb_remainder; bb_body -> bb1 [penwidth=2, color=blue]; bb_remainder -> bb5;
+}

@@ -1,0 +1,38 @@
+int functional (int *a, int n)
+{
+bb0:
+    res0 = 0;
+    i0 = 0;
+    br bb1
+bb1:
+    i1 = phi(i0, i_inc)
+    res1 = phi(res0, res_inc)
+
+    cmp1 = i1 < n
+    br cmp1, bb2, bb5
+bb2:
+    x2 = 2
+    y2 = 1
+    cmp2 = i1 % 2 == 0
+    br cmp2, bb3, bb4
+bb3:
+    addr3 = a + i1
+    val3 = *addr3
+    tmp3 = x2 * y2
+    term3 = val3 * tmp3
+    res3 = res1 + term3
+    br bb_inc
+bb4:
+    addr4 = a + i1
+    val4 = *addr4
+    tmp4 = x2 * y2
+    term4 = val4 + tmp4
+    res4 = res1 - term4
+    br bb_inc
+bb_inc:
+    res_inc = phi(res3, res4)
+    i_inc = i_inc + 1
+    br bb1
+bb5:
+    return res1
+}

@@ -1,0 +1,84 @@
+digraph CFG_Full {
+    // Настройки внешнего вида
+    node [shape=none, fontname="Courier New", fontsize=12];
+    edge [fontname="Arial", fontsize=10];
+    rankdir=TB;
+
+    // Определение блоков с использованием HTML-таблиц для красивой разметки кода
+    bb0 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#e1f5fe">
+            <tr><td><b>bb0: Entry</b></td></tr>
+            <tr><td align="left">res0 = 0</td></tr>
+            <tr><td align="left">i0 = 0</td></tr>
+            <tr><td align="left">br bb1</td></tr>
+        </table>>];
+
+    bb1 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#fff9c4">
+            <tr><td><b>bb1: Loop Header</b></td></tr>
+            <tr><td align="left">i1 = phi(i0, i_inc)</td></tr>
+            <tr><td align="left">res1 = phi(res0, res_inc)</td></tr>
+            <tr><td align="left">cmp1 = i1 &lt; n</td></tr>
+            <tr><td align="left">br cmp1, bb2, bb5</td></tr>
+        </table>>];
+
+    bb2 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#fff9c4">
+            <tr><td><b>bb2: If-Else Split</b></td></tr>
+            <tr><td align="left">x2 = 2</td></tr>
+            <tr><td align="left">y2 = 1</td></tr>
+            <tr><td align="left">cmp2 = i1 % 2 == 0</td></tr>
+            <tr><td align="left">br cmp2, bb3, bb4</td></tr>
+        </table>>];
+
+    bb3 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#c8e6c9">
+            <tr><td><b>bb3: Then (Even)</b></td></tr>
+            <tr><td align="left">addr3 = a + i1</td></tr>
+            <tr><td align="left">val3 = *addr3</td></tr>
+            <tr><td align="left">tmp3 = x2 * y2</td></tr>
+            <tr><td align="left">term3 = val3 * tmp3</td></tr>
+            <tr><td align="left">res3 = res1 + term3</td></tr>
+            <tr><td align="left">br bb_inc</td></tr>
+        </table>>];
+
+    bb4 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#ffcdd2">
+            <tr><td><b>bb4: Else (Odd)</b></td></tr>
+            <tr><td align="left">addr4 = a + i1</td></tr>
+            <tr><td align="left">val4 = *addr4</td></tr>
+            <tr><td align="left">tmp4 = x2 * y2</td></tr>
+            <tr><td align="left">term4 = val4 + tmp4</td></tr>
+            <tr><td align="left">result = res1 - term4</td></tr>
+            <tr><td align="left">br bb_inc</td></tr>
+        </table>>];
+
+    bb_inc [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#e1f5fe">
+            <tr><td><b>bb_inc: Increment</b></td></tr>
+            <tr><td align="left">res_inc = phi(res3, res4)</td></tr>
+            <tr><td align="left">i_inc = i_inc + 1</td></tr>
+            <tr><td align="left">br bb1</td></tr>
+        </table>>];
+
+    bb5 [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="#cfd8dc">
+            <tr><td><b>bb5: Exit</b></td></tr>
+            <tr><td align="left">return res1</td></tr>
+        </table>>];
+
+    // Связи между блоками
+    bb0 -> bb1;
+
+    bb1 -> bb2 [label="True", color="green", fontcolor="green"];
+    bb1 -> bb5 [label="False", color="red", fontcolor="red"];
+
+    bb2 -> bb3 [label="i % 2 == 0", color="blue"];
+    bb2 -> bb4 [label="else", color="orange"];
+
+    bb3 -> bb_inc;
+    bb4 -> bb_inc;
+
+    // Обратное ребро цикла
+    bb_inc -> bb1 [color="#1a237e", penwidth=2, constraint=true];
+}
