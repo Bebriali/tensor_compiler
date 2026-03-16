@@ -35,7 +35,63 @@ int functional(int *a, int n) {
 ```
 
 ---
+<details>
+<summary>
+    generic код
+</summary>
 
+    
+```rust
+int functional (int *a, int n)
+{
+bb0:
+    res0 = 0;
+    i0 = 0;
+    br bb1
+bb1:
+    i1 = phi(i0, i_inc)
+    res1 = phi(res0, res_inc)
+
+    cmp1 = i1 < n
+    br cmp1, bb2, bb5
+bb2:
+    x2 = 2
+    y2 = 1
+    cmp2 = i1 % 2 == 0
+    br cmp2, bb3, bb4
+bb3:
+    addr3 = a + i1
+    val3 = *addr3
+    tmp3 = x2 * y2
+    term3 = val3 * tmp3
+    res3 = res1 + term3
+    br bb_inc
+bb4:
+    addr4 = a + i1
+    val4 = *addr4
+    tmp4 = x2 * y2
+    term4 = val4 + tmp4
+    res4 = res1 - term4
+    br bb_inc
+bb_inc:
+    res_inc = phi(res3, res4)
+    i_inc = i_inc + 1
+    br bb1
+bb5:
+    return res1
+}
+```
+
+</details>
+
+<details>
+    
+<summary>generic IR</summary>
+
+![generic ir до применения арифметических оптимизаций](generic/code.png)
+    
+---
+</details>
 # 2. Примененные оптимизации
 
 ## 1. Свертка констант
@@ -69,13 +125,16 @@ x * y → 2
 |---|---|
 | `i % 2 == 0` | `i & 1 == 0` |
 | `val * 2` | `val << 1` |
----
 <details>
 <summary>
     genericIR
 </summary>
-![generic ir после применения арифметических оптимизаций](github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/const_fold.png)
+    
+![generic ir после применения арифметических оптимизаций](generic/const_fold.png)
+
 </details>
+
+---
 
 ## 3. Loop Unrolling (Развертка цикла)
 
@@ -134,8 +193,8 @@ bb_remainder: ; Обработка последнего элемента, есл
     }
     br bb_exit
 ```
-</details>
 ---
+</details>
 
 # 3. Финальное оптимизированное SSA IR
 
@@ -176,7 +235,11 @@ bb_exit: ; Выход
 <summary>
     genericIR
 </summary>
-![generic ir после применения развертки цикла](github.com/bebriali/tensor_compiler/lec_tasks/ir/generic/unroll.png)
+<br>
+    
+![generic ir после применения арифметических оптимизаций](generic/unroll.png)
+
+</br>
 </details>
 
 # 4. Анализ сложности
@@ -216,16 +279,6 @@ T(n) = O(n)
 Также благодаря **Loop Unrolling**:
 
 - число итераций цикла ≈ `n / 2`
-
----
-
-## Пространственная сложность
-
-Алгоритм использует **константное количество переменных**:
-
-```
-S(n) = O(1)
-```
 
 ---
 
