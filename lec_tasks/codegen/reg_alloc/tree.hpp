@@ -43,7 +43,7 @@ class Tree_t
         }
 
         /**
-        * @brief Рекурсивный вывод дерева в консоль
+        * @brief recursive dump of tree to console
         */
         void PrintNode(std::shared_ptr<Node_t> current = nullptr, int depth = 0) const {
             if (!current) {
