@@ -1,32 +1,38 @@
 # Tensor Compiler Frontend
 
-C++ фронтенд для трансляции ONNX-моделей в вычислительный граф  
-с последующей визуализацией через GraphViz.
-
----
-
-## 🛠 Подготовка системы
-
-Для сборки в Linux используйте системный менеджер пакетов:
-
-```bash
-sudo apt update
-sudo apt install -y build-essential cmake graphviz \
-                    libprotobuf-dev protobuf-compiler \
-                    libonnx-dev libgtest-dev
-```
-
----
+C++ фронтенд для трансляции ONNX-моделей в вычислительный граф с возможностью визуализации через GraphViz.
 
 ## 🚀 Сборка проекта
 
-Сборка выполняется стандартными командами CMake:
+Проект использует **vcpkg** для управления зависимостями. Для корректной настройки и связи библиотек используйте PowerShell.
 
-```bash
-# 1. Генерация файлов сборки
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+### 1. Генерация файлов сборки
 
-# 2. Компиляция (используя все ядра процессора)
+Запустите команду из корневой директории проекта (убедитесь, что пути к `vcpkg` соответствуют вашему локальному окружению):
+
+#### в Windows
+прописать путь к vcpkg:
+```powershell
+setx VCPKG_ROOT ""path_to_vcpkg"\vcpkg"
+```
+запустить с помощью MinGW:
+```powershell
+cmake -B build `
+     -DCMAKE_TOOLCHAIN_FILE="D:/vcpkg_source/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+     -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic `
+     -DCMAKE_BUILD_TYPE=Debug `
+     -G "MinGW Makefiles"
+```
+
+#### В Linux
+```powershell
+export VCPKG_ROOT=/путь/к/вашему/vcpkg
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+```
+
+### 2. Компиляция
+
+```powershell
 cmake --build build
 ```
 
@@ -34,101 +40,57 @@ cmake --build build
 
 ## 🧪 Запуск и тестирование
 
-После сборки все бинарники находятся в директории `./build/`.
+После успешной сборки все исполняемые файлы будут находиться в директории `./build/`.
 
-### ▶ Основная программа
+### Основная программа
 
-```bash
-./build/TensorCompiler path/to/model.onnx
+Запуск парсера для конкретной ONNX модели:
+
+```powershell
+./build/TensorCompiler.exe <*.onnx>
 ```
 
-### 🧪 Тесты
+### Тестирование
 
-| Тип теста | Команда | Описание |
-|----------|--------|----------|
-| Unit     | `./build/unit_tests` | Проверка логики отдельных компонентов |
-| E2E      | `./build/e2e_tests`  | Интеграционные тесты ONNX |
+В проекте реализовано два уровня тестов. Вы можете запустить их напрямую:
 
-Запуск всех тестов сразу:
-
-```bash
-cd build && ctest
-```
+| Тест | Команда запуска | Описание |
+|------|-----------------|----------|
+| Unit | `./build/unit_tests.exe` | Проверка логики отдельных узлов и структуры дерева. |
+| E2E  | `./build/e2e_tests.exe`  | End-to-end проверка парсинга реальных ONNX моделей. |
 
 ---
 
-## 📊 Визуализация графа
+## 📊 Визуализация
 
-Если установлен GraphViz, можно сгенерировать изображение графа:
+Проект поддерживает автоматическую генерацию графических схем графа. Если в вашей системе установлен GraphViz (утилита `dot` доступна в `PATH`), вы можете выполнить команду:
 
-```bash
-dot -Tpng dump/graph.dot -o graph.png
+### Генерация PNG:
+
+```powershell
+dot -Tpng dump/<*.dot> -o dump/<*.png>
 ```
+
+Результат: изображение будет сохранено в директории `frontend/dump/model3.png`.
 
 ---
 
 ## 📂 Структура проекта
 
 ```
-src/        — исходный код ядра и парсеров  
-tests/      — модульные и e2e тесты  
-models/     — примеры ONNX моделей  
-dump/       — результаты генерации графов  
+src/tree/        — базовые структуры данных вычислительного графа
+src/parse_onnx/  — логика трансляции из формата Protobuf (ONNX)
+src/dump/        — экспорт графа в формат .dot для GraphViz
+tests/           — модульные и интеграционные тесты
+models/          — примеры моделей для тестирования
 ```
 
 ---
 
-## ⚙️ Особенности Linux-версии
+## ⚠️ Примечания для Windows (MinGW)
 
-- Нет vcpkg — используются системные библиотеки  
-- Нет .exe — бинарники без расширений  
-- Нет PowerShell — используется Bash/Zsh  
-- Быстрая сборка через `-j$(nproc)`  
-- Зависимости устанавливаются через apt  
+**Динамические библиотеки:**
+Так как используется триплет `x64-mingw-dynamic`, для запуска `.exe` могут потребоваться DLL (например, `libprotobufd.dll`). Скрипт сборки в `CMakeLists.txt` настроен на их автоматическое копирование в папку `build`.
 
----
-
-## 💡 Требования
-
-- CMake ≥ 3.15  
-- GCC / Clang с поддержкой C++17  
-- Установленные библиотеки:
-  - Protobuf  
-  - ONNX  
-  - GoogleTest  
-  - GraphViz (опционально)  
-
----
-
-## 🚧 Пример полного цикла
-
-```bash
-# Установка зависимостей
-sudo apt update
-sudo apt install -y build-essential cmake graphviz \
-                    libprotobuf-dev protobuf-compiler \
-                    libonnx-dev libgtest-dev
-
-# Сборка
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-
-# Запуск тестов
-cd build && ctest
-
-# Запуск программы
-./TensorCompiler ../models/example.onnx
-
-# Генерация графа
-dot -Tpng dump/graph.dot -o graph.png
-```
-
----
-
-## Примечание
-
-Если ONNX не найден автоматически, установите:
-
-```bash
-sudo apt install libonnx-dev
-```
+**vcpkg:**
+Если ваш `vcpkg` установлен в другое место, обязательно замените путь в параметре `-DCMAKE_TOOLCHAIN_FILE`.
