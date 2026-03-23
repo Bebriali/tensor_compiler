@@ -27,7 +27,7 @@ sudo apt install -y build-essential cmake graphviz \
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 
 # 2. Компиляция (используя все ядра процессора)
-cmake --build build -j$(nproc)
+cmake --build build
 ```
 
 ---
