@@ -111,7 +111,7 @@ sudo apt install -y build-essential cmake graphviz \
 
 # Сборка
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j$(nproc)
+cmake --build build
 
 # Запуск тестов
 cd build && ctest
