@@ -10,7 +10,7 @@ int functional_c(int *a, int n) {
         if (i % 2 == 0) {
             res += a[i] * 2;
         } else {
-            res -= (a[i] + 3);
+            res -= (a[i] + 2);
         }
     }
     return res;
