@@ -1,0 +1,27 @@
+digraph DAG4_Scheduling_Detailed {
+    rankdir=TB;
+    node [shape=rect, style="filled, rounded", fontname="Courier", fontsize=10];
+    edge [fontname="Courier", fontsize=9];
+
+    // Узлы с расчетом времени
+    // Формат: TE - Early Start, TL - Late Start
+    
+    node1 [label="1. SLLI t0, s1, 2\n(Offset)\nTE=0, TL=0", fillcolor="#D1E8FF"];
+    node2 [label="2. ADD t0, a0, t0\n(Address)\nTE=2, TL=2", fillcolor="#D1E8FF"];
+    node3 [label="3. LW t1, 0(t0)\n(Load val4)\nTE=4, TL=4", fillcolor="#FFF2CC"];
+    node4 [label="4. ADDI t2, t1, 3\n(Term4)\nTE=7, TL=7", fillcolor="#D5E8D4"];
+    node5 [label="5. SUB s0, s0, t2\n(Update res)\nTE=9, TL=9", fillcolor="#F8CECC"];
+    
+    // Прыжок не влияет на критический путь расчетов, 
+    // поэтому у него есть "запас" (slack)
+    node6 [label="6. J DAG_INC\n(Jump)\nTE=0, TL=9", shape=ellipse, fillcolor="#E1D5E7"];
+
+    // Ребра зависимостей с указанием веса (задержки)
+    node1 -> node2 [label="t0 (2)", fontcolor=red, color=red, penwidth=2];
+    node2 -> node3 [label="t0 (2)", fontcolor=red, color=red, penwidth=2];
+    node3 -> node4 [label="t1 (3)", fontcolor=red, color=red, penwidth=2];
+    node4 -> node5 [label="t2 (2)", fontcolor=red, color=red, penwidth=2];
+
+    // Визуальное выравнивание
+    {rank=same; node1; node6;}
+}

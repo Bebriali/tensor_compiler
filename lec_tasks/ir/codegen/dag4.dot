@@ -1,0 +1,29 @@
+digraph DAG4 {
+    rankdir=BT;
+    node [shape=circle, fontname="Courier"];
+
+    // Узлы
+    res_nxt [label="res_nxt", shape=rect];
+    sub_main [label="-"];
+    res1 [label="res1", shape=rect];
+    add_val [label="+"];
+    const3 [label="3", shape=rect];
+    load [label="load"];
+    add_ptr [label="+"];
+    a [label="a", shape=rect];
+    shl [label="<<"];
+    i1 [label="i1", shape=rect];
+    const2 [label="2", shape=rect];
+
+    // Связи
+    res_nxt -> sub_main;
+    sub_main -> res1;
+    sub_main -> add_val;
+    add_val -> const3;
+    add_val -> load;
+    load -> add_ptr;
+    add_ptr -> a;
+    add_ptr -> shl;
+    shl -> i1;
+    shl -> const2;
+}

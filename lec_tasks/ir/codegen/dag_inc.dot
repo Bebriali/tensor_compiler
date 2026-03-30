@@ -1,0 +1,20 @@
+digraph DAG_INC {
+    rankdir=BT;
+    node [shape=rect, fontname="Courier"];
+
+    // Узлы для индекса
+    s1 [label="s1 (i_next)"];
+    add_i [label="+", shape=circle];
+    i1 [label="i_curr"];
+    const1 [label="1"];
+
+    // Узел для результата
+    s0 [label="s0 (res_final)"];
+    res_nxt [label="res_nxt"];
+
+    // Связи
+    s1 -> add_i;
+    add_i -> i1;
+    add_i -> const1;
+    s0 -> res_nxt [label="move", style=dashed];
+}
