@@ -22,7 +22,7 @@ DAG4: # Нечетные: res -= (a[i] + 3)
     slli t0, t5, 2       # offset = i * 4
     add  t0, a0, t0      # addr = a + offset
     lw   t1, 0(t0)       # t1 = a[i]
-    addi t1, t1, 2       # t1 = val + 3
+    addi t1, t1, 2       # t1 = val + 2
     sub  t4, t4, t1      # res -= t1
     j    DAG_INC
 
@@ -38,7 +38,6 @@ DAG_INC:
     j    DAG1
 
 DAG5:
-    # --- ЭПИЛОГ ---
     mv   a0, t4          # Результат в a0
     lw   ra, 0(sp)       # Восстанавливаем адрес возврата
     addi sp, sp, 16      # Чистим стек
