@@ -1,0 +1,29 @@
+digraph DAG3 {
+    rankdir=BT; // Снизу вверх, как в твоем наброске
+    node [shape=circle, fontname="Courier"];
+
+    // Узлы
+    res_nxt [label="res_nxt", shape=rect];
+    add_main [label="+"];
+    res1 [label="res1", shape=rect];
+    mul [label="*"];
+    const2 [label="2", shape=rect];
+    load [label="load"];
+    add_ptr [label="+"];
+    a [label="a", shape=rect];
+    shl [label="<<"];
+    i1 [label="i1", shape=rect];
+    const2_shl [label="2", shape=rect];
+
+    // Связи
+    res_nxt -> add_main;
+    add_main -> res1;
+    add_main -> mul;
+    mul -> const2;
+    mul -> load;
+    load -> add_ptr;
+    add_ptr -> a;
+    add_ptr -> shl;
+    shl -> i1;
+    shl -> const2_shl;
+}
