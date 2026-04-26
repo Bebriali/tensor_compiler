@@ -1,0 +1,2 @@
+/usr/bin/ar qc libkernels_lib.a CMakeFiles/kernels_lib.dir/src/gemm.cpp.o CMakeFiles/kernels_lib.dir/src/convolution.cpp.o
+/usr/bin/ranlib libkernels_lib.a

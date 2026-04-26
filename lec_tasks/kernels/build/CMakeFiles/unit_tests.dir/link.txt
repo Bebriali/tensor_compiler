@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/unit_tests.dir/test/test_kernels.cpp.o -o unit_tests  libkernels_lib.a lib/libgtest_main.a lib/libgtest.a 

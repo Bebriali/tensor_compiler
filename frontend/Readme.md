@@ -1,19 +1,27 @@
 # Tensor Compiler Frontend
 
-C++ фронтенд для трансляции ONNX-моделей в вычислительный граф  
+C++ фронтенд для трансляции ONNX-моделей в вычислительный граф
 с последующей визуализацией через GraphViz.
 
 ---
 
-## 🛠 Подготовка системы
+## 🛠 Подготовка системы (Linux / WSL)
 
-Для сборки в Linux используйте системный менеджер пакетов:
+Для сборки установите системные пакеты и библиотеки:
 
 ```bash
 sudo apt update
 sudo apt install -y build-essential cmake graphviz \
                     libprotobuf-dev protobuf-compiler \
                     libonnx-dev libgtest-dev
+```
+
+**Важно для WSL/Ubuntu:**
+Если после установки возникает ошибка `onnx/onnx.pb.h: No such file`, выполните:
+
+```bash
+cd /usr/include/onnx
+sudo protoc --cpp_out=. onnx.proto
 ```
 
 ---
@@ -26,7 +34,7 @@ sudo apt install -y build-essential cmake graphviz \
 # 1. Генерация файлов сборки
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-# 2. Компиляция (используя все ядра процессора)
+# 2. Компиляция (используя все доступные ядра процессора)
 cmake --build build
 ```
 
@@ -42,24 +50,24 @@ cmake --build build
 ./build/TensorCompiler path/to/model.onnx
 ```
 
-### 🧪 Тесты
+### 🧪 Тестирование
 
 | Тип теста | Команда | Описание |
 |----------|--------|----------|
 | Unit     | `./build/unit_tests` | Проверка логики отдельных компонентов |
-| E2E      | `./build/e2e_tests`  | Интеграционные тесты ONNX |
+| E2E      | `./build/e2e_tests`  | Интеграционные тесты ONNX моделей |
 
-Запуск всех тестов сразу:
+Запуск всех тестов:
 
 ```bash
-cd build && ctest
+cd build && ctest --output-on-failure
 ```
 
 ---
 
 ## 📊 Визуализация графа
 
-Если установлен GraphViz, можно сгенерировать изображение графа:
+Проект генерирует `.dot` файл. Для получения изображения:
 
 ```bash
 dot -Tpng dump/graph.dot -o graph.png
@@ -70,65 +78,34 @@ dot -Tpng dump/graph.dot -o graph.png
 ## 📂 Структура проекта
 
 ```
-src/        — исходный код ядра и парсеров  
-tests/      — модульные и e2e тесты  
-models/     — примеры ONNX моделей  
-dump/       — результаты генерации графов  
+src/     — исходный код (Core, Parser, Dump)
+tests/   — модульные и интеграционные тесты
+models/  — примеры .onnx моделей
+dump/    — сгенерированные графы (.dot)
 ```
 
 ---
 
 ## ⚙️ Особенности Linux-версии
 
-- Нет vcpkg — используются системные библиотеки  
-- Нет .exe — бинарники без расширений  
-- Нет PowerShell — используется Bash/Zsh  
-- Быстрая сборка через `-j$(nproc)`  
-- Зависимости устанавливаются через apt  
+- Native Dependencies — используются системные библиотеки вместо vcpkg
+- Performance — сборка с `-j$(nproc)`
+- Standard Paths — бинарники без `.exe`
+- Environment — совместимость с Bash/Zsh и WSL
 
 ---
 
-## 💡 Требования
-
-- CMake ≥ 3.15  
-- GCC / Clang с поддержкой C++17  
-- Установленные библиотеки:
-  - Protobuf  
-  - ONNX  
-  - GoogleTest  
-  - GraphViz (опционально)  
-
----
-
-## 🚧 Пример полного цикла
+## 🚧 Быстрый старт (Full Cycle)
 
 ```bash
-# Установка зависимостей
-sudo apt update
-sudo apt install -y build-essential cmake graphviz \
-                    libprotobuf-dev protobuf-compiler \
-                    libonnx-dev libgtest-dev
-
-# Сборка
+# 1. Сборка
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
-# Запуск тестов
-cd build && ctest
+# 2. Запуск тестов
+cd build && ctest && cd ..
 
-# Запуск программы
-./TensorCompiler ../models/example.onnx
-
-# Генерация графа
-dot -Tpng dump/graph.dot -o graph.png
-```
-
----
-
-## Примечание
-
-Если ONNX не найден автоматически, установите:
-
-```bash
-sudo apt install libonnx-dev
+# 3. Трансляция модели и генерация графа
+./build/TensorCompiler models/example.onnx
+dot -Tpng dump/graph.dot -o result_graph.png
 ```
