@@ -1,3 +1,0 @@
-/mnt/c/users/1/desktop/max_folder/inst/tensor_compiler/lec_tasks/kernels/build/_deps/googlebenchmark-subbuild/CMakeFiles/googlebenchmark-populate.dir
-/mnt/c/users/1/desktop/max_folder/inst/tensor_compiler/lec_tasks/kernels/build/_deps/googlebenchmark-subbuild/CMakeFiles/edit_cache.dir
-/mnt/c/users/1/desktop/max_folder/inst/tensor_compiler/lec_tasks/kernels/build/_deps/googlebenchmark-subbuild/CMakeFiles/rebuild_cache.dir

@@ -18,5 +18,7 @@ static void BM_GemmAVX(benchmark::State& state) {
     }
 }
 BENCHMARK(BM_GemmAVX)->RangeMultiplier(2)->Range(64, 1024);
+BENCHMARK(BM_Conv_Naive)->RangeMultiplier(2)->Range(64, 512);
+BENCHMARK(BM_Conv_Im2Col_AVX)->RangeMultiplier(2)->Range(64, 512);
 
 BENCHMARK_MAIN();

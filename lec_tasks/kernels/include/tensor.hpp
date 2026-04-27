@@ -10,7 +10,7 @@ namespace kernels {
 
     class Tensor {
     public:
-        Tensor(size_t n, size_t h, size_t w, size_t c)
+        Tensor(size_t n, size_t h, size_t w, size_t c) 
             : shape_{n, h, w, c}, data(n * h * w * c, 0.0f) {}
 
         float& operator()(size_t n, size_t h, size_t w, size_t c) {
@@ -28,6 +28,6 @@ namespace kernels {
 
     private:
         Shape shape_;
-        std::vector<float> data; // В продакшене лучше использовать aligned_alloc
+        std::vector<float> data;
     };
 }

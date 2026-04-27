@@ -1,0 +1,166 @@
+{
+  "context": {
+    "date": "2026-04-27T22:18:28+03:00",
+    "host_name": "maxim-81dc",
+    "executable": "./bench_kernels",
+    "num_cpus": 4,
+    "mhz_per_cpu": 2000,
+    "cpu_scaling_enabled": true,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 262144,
+        "num_sharing": 2
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 3145728,
+        "num_sharing": 4
+      }
+    ],
+    "load_avg": [4.10059,2.73145,2.36963],
+    "library_build_type": "release"
+  },
+  "benchmarks": [
+    {
+      "name": "BM_GemmNaive/64",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_GemmNaive/64",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 1646,
+      "real_time": 3.9956487363321782e+05,
+      "cpu_time": 3.9854131105710816e+05,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmNaive/128",
+      "family_index": 0,
+      "per_family_instance_index": 1,
+      "run_name": "BM_GemmNaive/128",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 181,
+      "real_time": 3.8732628066285923e+06,
+      "cpu_time": 3.8659625856353585e+06,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmNaive/256",
+      "family_index": 0,
+      "per_family_instance_index": 2,
+      "run_name": "BM_GemmNaive/256",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 18,
+      "real_time": 3.4210609888860852e+07,
+      "cpu_time": 3.3941489111111119e+07,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmNaive/512",
+      "family_index": 0,
+      "per_family_instance_index": 3,
+      "run_name": "BM_GemmNaive/512",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 2,
+      "real_time": 3.8541112599978077e+08,
+      "cpu_time": 3.8443480550000000e+08,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmAVX/64",
+      "family_index": 1,
+      "per_family_instance_index": 0,
+      "run_name": "BM_GemmAVX/64",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 21952,
+      "real_time": 3.2025839057943136e+04,
+      "cpu_time": 3.1940532252186589e+04,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmAVX/128",
+      "family_index": 1,
+      "per_family_instance_index": 1,
+      "run_name": "BM_GemmAVX/128",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 2280,
+      "real_time": 3.0367344385938434e+05,
+      "cpu_time": 3.0288547982456128e+05,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmAVX/256",
+      "family_index": 1,
+      "per_family_instance_index": 2,
+      "run_name": "BM_GemmAVX/256",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 260,
+      "real_time": 2.6765264653826864e+06,
+      "cpu_time": 2.6716331230769237e+06,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmAVX/512",
+      "family_index": 1,
+      "per_family_instance_index": 3,
+      "run_name": "BM_GemmAVX/512",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 27,
+      "real_time": 2.6041943185157798e+07,
+      "cpu_time": 2.5939004740740731e+07,
+      "time_unit": "ns"
+    },
+    {
+      "name": "BM_GemmAVX/1024",
+      "family_index": 1,
+      "per_family_instance_index": 4,
+      "run_name": "BM_GemmAVX/1024",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 2,
+      "real_time": 3.1714843400004613e+08,
+      "cpu_time": 3.1478351649999946e+08,
+      "time_unit": "ns"
+    }
+  ]
+}
